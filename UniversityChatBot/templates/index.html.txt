@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>University Assistant Chatbot</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<div class="chat-container">
+
+
+    <!-- HEADER -->
+
+    <div class="chat-header">
+
+        <div class="bot-avatar">
+            🤖
+        </div>
+
+        <div class="header-info">
+
+            <div class="bot-name">
+                University Assistant
+            </div>
+
+            <div class="status">
+                <span></span>
+                Online
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- CHAT AREA -->
+
+    <div id="chat-box"
+         class="chat-box">
+
+
+        <!-- BOT WELCOME MESSAGE -->
+
+        <div class="message-row bot-row">
+
+            <div class="avatar">
+                🤖
+            </div>
+
+            <div class="message bot-message">
+
+                <div>
+                    မင်္ဂလာပါ။ 👋
+                </div>
+
+                <div>
+                    University Assistant Chatbot မှ
+                    ကြိုဆိုပါတယ်။
+                </div>
+
+                <div class="message-time">
+                    Now
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- INPUT AREA -->
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="message-input"
+            placeholder="Type your message..."
+            autocomplete="off"
+        >
+
+        <button
+            id="send-button"
+            onclick="sendMessage()">
+
+            ➤
+
+        </button>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+// ======================================================
+// SEND MESSAGE
+// ======================================================
+
+function sendMessage() {
+
+    const input =
+        document.getElementById("message-input");
+
+    const message =
+        input.value.trim();
+
+
+    if (message === "") {
+
+        return;
+
+    }
+
+
+    // Display user message
+
+    addUserMessage(message);
+
+
+    // Clear input
+
+    input.value = "";
+
+
+    // Send to Flask
+
+    fetch("/chat", {
+
+        method: "POST",
+
+        headers: {
+
+            "Content-Type":
+                "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+            message: message
+
+        })
+
+    })
+
+
+    .then(response => response.json())
+
+
+    .then(data => {
+
+        // Small delay
+        // Makes chatbot feel more natural
+
+        setTimeout(function() {
+
+            addBotMessage(
+                data.response
+            );
+
+        }, 400);
+
+    })
+
+
+    .catch(error => {
+
+        console.error(error);
+
+        addBotMessage(
+            "Server error ဖြစ်နေပါတယ်။ 😕"
+        );
+
+    });
+
+}
+
+
+
+// ======================================================
+// USER MESSAGE
+// ======================================================
+
+function addUserMessage(message) {
+
+    const chatBox =
+        document.getElementById("chat-box");
+
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "message-row user-row";
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "message user-message";
+
+
+    bubble.innerHTML = `
+
+        <div>
+            ${escapeHtml(message)}
+        </div>
+
+        <div class="message-time">
+            ${getTime()}
+        </div>
+
+    `;
+
+
+    row.appendChild(bubble);
+
+    chatBox.appendChild(row);
+
+
+    scrollToBottom();
+
+}
+
+
+
+// ======================================================
+// BOT MESSAGE
+// ======================================================
+
+function addBotMessage(message) {
+
+    const chatBox =
+        document.getElementById("chat-box");
+
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "message-row bot-row";
+
+
+    const avatar =
+        document.createElement("div");
+
+    avatar.className =
+        "avatar";
+
+    avatar.innerHTML =
+        "🤖";
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "message bot-message";
+
+
+    bubble.innerHTML = `
+
+        <div>
+            ${message}
+        </div>
+
+        <div class="message-time">
+            ${getTime()}
+        </div>
+
+    `;
+
+
+    row.appendChild(avatar);
+
+    row.appendChild(bubble);
+
+    chatBox.appendChild(row);
+
+
+    scrollToBottom();
+
+}
+
+
+
+// ======================================================
+// GET TIME
+// ======================================================
+
+function getTime() {
+
+    const now =
+        new Date();
+
+
+    return now.toLocaleTimeString(
+        [],
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+
+// ======================================================
+// SCROLL TO BOTTOM
+// ======================================================
+
+function scrollToBottom() {
+
+    const chatBox =
+        document.getElementById("chat-box");
+
+
+    chatBox.scrollTop =
+        chatBox.scrollHeight;
+
+}
+
+
+
+// ======================================================
+// ENTER KEY
+// ======================================================
+
+document
+    .getElementById("message-input")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+
+
+// ======================================================
+// HTML ESCAPE
+// ======================================================
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text;
+
+    return div.innerHTML;
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

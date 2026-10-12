@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>UCS Monywa Assistant</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="bot-icon">
+            🤖
+        </div>
+
+        <div class="header-info">
+
+            <div class="title">
+                🎓 UCS Monywa Assistant
+            </div>
+
+            <div class="subtitle">
+                University Assistant Chatbot
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CHAT -->
+
+    <div class="chat-container"
+         id="chat-container">
+
+        <div class="chat-box"
+             id="chat-box">
+
+
+            <!-- BOT WELCOME -->
+
+            <div class="message bot-message">
+
+                <div class="avatar">
+                    🤖
+                </div>
+
+                <div class="bubble bot-bubble">{{ greeting }} 👋
+                    UCS Monywa University အတွက်
+                   အထောက်အကူပြု Chatbot ဖြစ်ပါတယ်။
+		 အောက်ပါအကြောင်းအရာများကို
+                    မေးမြန်းနိုင်ပါတယ်။
+                </div>
+
+            </div>
+
+
+            <!-- CATEGORIES -->
+
+            <div class="category-container">
+
+                <div class="category-title">
+                    📚 အကြောင်းအရာရွေးချယ်ပါ
+                </div>
+
+
+                <div class="category-row">
+
+                    <button class="category-btn"
+                            onclick="quickMessage('degree')">
+                        🎓 ဘွဲ့များ
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('courses')">
+                        📚 သင်ရိုးများ
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('timetable')">
+                        🕐 အချိန်ဇယား
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('admission')">
+                        📝 ဝင်ခွင့်
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('registration')">
+                        📋 ကျောင်းအပ်ခြင်း
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('fees')">
+                        💰 ကျောင်းလခ
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('exam')">
+                        📝 စာမေးပွဲ
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('result')">
+                        📊 ရလဒ်
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('library')">
+                        📖 စာကြည့်တိုက်
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('hostel')">
+                        🏠 အဆောင်
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('contact')">
+                        📞 ဆက်သွယ်ရန်
+                    </button>
+
+                    <button class="category-btn"
+                            onclick="quickMessage('location')">
+                        📍 တည်နေရာ
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK BUTTONS -->
+
+    <div class="quick-area">
+
+        <span class="quick-title">
+            Quick:
+        </span>
+
+        <button onclick="quickMessage('degree')">
+            🎓 Degree
+        </button>
+
+        <button onclick="quickMessage('courses')">
+            📚 Courses
+        </button>
+
+        <button onclick="quickMessage('timetable')">
+            🕐 Timetable
+        </button>
+
+        <button onclick="quickMessage('admission')">
+            📝 Admission
+        </button>
+
+        <button onclick="quickMessage('fees')">
+            💰 Fees
+        </button>
+
+        <button onclick="quickMessage('contact')">
+            📞 Contact
+        </button>
+
+    </div>
+
+
+    <!-- INPUT -->
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="message-input"
+            placeholder="မေးခွန်းရိုက်ထည့်ပါ..."
+            autocomplete="off"
+        >
+
+        <button id="send-button"
+                onclick="sendMessage()">
+            ➤
+        </button>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+const input =
+    document.getElementById("message-input");
+
+const chatBox =
+    document.getElementById("chat-box");
+
+const chatContainer =
+    document.getElementById("chat-container");
+
+const sendButton =
+    document.getElementById("send-button");
+
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+function scrollToBottom() {
+
+    setTimeout(function() {
+
+        chatContainer.scrollTop =
+            chatContainer.scrollHeight;
+
+    }, 50);
+
+}
+
+
+
+/* =========================================================
+   GET RESPONSE TEXT
+========================================================= */
+
+function getResponseText(data) {
+
+    return data.text ||
+           data.message ||
+           data.response ||
+           "";
+
+}
+
+
+
+/* =========================================================
+   USER MESSAGE
+========================================================= */
+
+function addUserMessage(message) {
+
+    const messageDiv =
+        document.createElement("div");
+
+    messageDiv.className =
+        "message user-message";
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "bubble user-bubble";
+
+    bubble.innerText =
+        message;
+
+
+    messageDiv.appendChild(bubble);
+
+    chatBox.appendChild(messageDiv);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   BOT MESSAGE
+========================================================= */
+
+function addBotMessage(text) {
+
+    if (!text) {
+        text = "တောင်းပန်ပါတယ်။ ပြန်လည်မေးမြန်းပေးပါ။";
+    }
+
+
+    const messageDiv =
+        document.createElement("div");
+
+    messageDiv.className =
+        "message bot-message";
+
+
+    const avatar =
+        document.createElement("div");
+
+    avatar.className =
+        "avatar";
+
+    avatar.innerText =
+        "🤖";
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "bubble bot-bubble";
+
+    bubble.innerText =
+        text;
+
+
+    messageDiv.appendChild(avatar);
+
+    messageDiv.appendChild(bubble);
+
+    chatBox.appendChild(messageDiv);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   TYPING
+========================================================= */
+
+function showTyping() {
+
+    removeTyping();
+
+
+    const messageDiv =
+        document.createElement("div");
+
+    messageDiv.className =
+        "message bot-message";
+
+    messageDiv.id =
+        "typing-message";
+
+
+    const avatar =
+        document.createElement("div");
+
+    avatar.className =
+        "avatar";
+
+    avatar.innerText =
+        "🤖";
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "bubble bot-bubble";
+
+
+    const typing =
+        document.createElement("div");
+
+    typing.className =
+        "typing";
+
+    typing.innerHTML = `
+        <span></span>
+        <span></span>
+        <span></span>
+    `;
+
+
+    bubble.appendChild(typing);
+
+    messageDiv.appendChild(avatar);
+
+    messageDiv.appendChild(bubble);
+
+    chatBox.appendChild(messageDiv);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   REMOVE TYPING
+========================================================= */
+
+function removeTyping() {
+
+    const typing =
+        document.getElementById(
+            "typing-message"
+        );
+
+
+    if (typing) {
+        typing.remove();
+    }
+
+}
+
+
+
+/* =========================================================
+   SECTION TITLE
+========================================================= */
+
+function addSectionTitle(title) {
+
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "category-container";
+
+
+    const titleDiv =
+        document.createElement("div");
+
+    titleDiv.className =
+        "category-title";
+
+    titleDiv.innerText =
+        title;
+
+
+    container.appendChild(titleDiv);
+
+    chatBox.appendChild(container);
+
+    return container;
+
+}
+
+
+
+/* =========================================================
+   COURSE SELECTION
+========================================================= */
+
+function showCourseSelection() {
+
+    const container =
+        addSectionTitle(
+            "📚 Course ရွေးချယ်ပါ"
+        );
+
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "category-row";
+
+
+    const cs =
+        document.createElement("button");
+
+    cs.className =
+        "category-btn";
+
+    cs.innerText =
+        "💻 Computer Science (CS)";
+
+    cs.onclick =
+        function() {
+            quickMessage(
+                "Computer Science courses"
+            );
+        };
+
+
+    const ct =
+        document.createElement("button");
+
+    ct.className =
+        "category-btn";
+
+    ct.innerText =
+        "🖥️ Computer Technology (CT)";
+
+    ct.onclick =
+        function() {
+            quickMessage(
+                "Computer Technology courses"
+            );
+        };
+
+
+    row.appendChild(cs);
+    row.appendChild(ct);
+
+    container.appendChild(row);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   COURSE YEAR
+========================================================= */
+
+function showCourseYearSelection(course) {
+
+    const container =
+        addSectionTitle(
+            "📚 ဘယ်နှစ်နှစ်ကို သိချင်ပါသလဲ?"
+        );
+
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "category-row";
+
+
+    const years = [
+        ["First Year", "first"],
+        ["Second Year", "second"],
+        ["Third Year", "third"],
+        ["Fourth Year", "fourth"],
+        ["Fifth Year", "fifth"]
+    ];
+
+
+    years.forEach(function(item) {
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "category-btn";
+
+        button.innerText =
+            item[0];
+
+
+        button.onclick =
+            function() {
+
+                const courseName =
+                    course === "cs"
+                        ? "Computer Science"
+                        : "Computer Technology";
+
+
+                quickMessage(
+                    courseName +
+                    " " +
+                    item[0] +
+                    " courses"
+                );
+
+            };
+
+
+        row.appendChild(button);
+
+    });
+
+
+    container.appendChild(row);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   SHOW COURSE LIST
+========================================================= */
+
+function showCourseList(
+    course,
+    year,
+    subjects
+) {
+
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "course-list";
+
+
+    const title =
+        document.createElement("div");
+
+    title.className =
+        "course-title";
+
+
+    const courseName =
+        course === "cs"
+            ? "💻 Computer Science"
+            : "🖥️ Computer Technology";
+
+
+    const yearName =
+        year.charAt(0).toUpperCase() +
+        year.slice(1);
+
+
+    title.innerText =
+        courseName +
+        " - " +
+        yearName;
+
+
+    container.appendChild(title);
+
+
+    subjects.forEach(function(
+        subject,
+        index
+    ) {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "course-item";
+
+
+        const number =
+            document.createElement("span");
+
+        number.className =
+            "course-number";
+
+        number.innerText =
+            index + 1;
+
+
+        const text =
+            document.createElement("span");
+
+        text.innerText =
+            subject;
+
+
+        item.appendChild(number);
+        item.appendChild(text);
+
+        container.appendChild(item);
+
+    });
+
+
+    chatBox.appendChild(container);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   DEGREE SELECTION
+========================================================= */
+
+function showDegreeSelection() {
+
+    const container =
+        addSectionTitle(
+            "🎓 ဘွဲ့အမျိုးအစားရွေးချယ်ပါ"
+        );
+
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "category-row";
+
+
+    const degrees = [
+
+        ["💻 B.C.Sc.", "BCSc"],
+
+        ["🖥️ B.C.Tech.", "BCTech"],
+
+        ["📜 D.C.Sc.", "DCSc"],
+
+        ["🎓 M.C.Sc.", "MCSc"],
+
+        ["🎓 M.C.Tech.", "MCTech"],
+
+        ["🎓 M.I.Sc.", "MISc"]
+
+    ];
+
+
+    degrees.forEach(function(degree) {
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "category-btn";
+
+        button.innerText =
+            degree[0];
+
+
+        button.onclick =
+            function() {
+
+                quickMessage(
+                    degree[1]
+                );
+
+            };
+
+
+        row.appendChild(button);
+
+    });
+
+
+    container.appendChild(row);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   TIMETABLE SELECTION
+========================================================= */
+
+function showTimetableSelection() {
+
+    const container =
+        addSectionTitle(
+            "🕐 ပညာသင်နှစ်ရွေးချယ်ပါ"
+        );
+
+
+    const row =
+        document.createElement("div");
+
+    row.className =
+        "category-row";
+
+
+    const years = [
+
+        ["1️⃣ First Year", "First Year timetable"],
+
+        ["2️⃣ Second Year", "Second Year timetable"],
+
+        ["3️⃣ Third Year", "Third Year timetable"],
+
+        ["4️⃣ Fourth Year", "Fourth Year timetable"],
+
+        ["5️⃣ Fifth Year", "Fifth Year timetable"],
+
+        ["🎓 Master", "Master timetable"]
+
+    ];
+
+
+    years.forEach(function(item) {
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "category-btn";
+
+        button.innerText =
+            item[0];
+
+
+        button.onclick =
+            function() {
+
+                quickMessage(
+                    item[1]
+                );
+
+            };
+
+
+        row.appendChild(button);
+
+    });
+
+
+    container.appendChild(row);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   SHOW TIMETABLE
+========================================================= */
+
+function showTimetable(data) {
+
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "timetable-container";
+
+
+    const title =
+        document.createElement("div");
+
+    title.className =
+        "timetable-title";
+
+    title.innerText =
+        "🕐 " +
+        (data.year_name || "Timetable");
+
+
+    container.appendChild(title);
+
+
+    if (!data.images ||
+        data.images.length === 0) {
+
+        const noImage =
+            document.createElement("div");
+
+        noImage.className =
+            "no-image";
+
+        noImage.innerText =
+            "Timetable image မတွေ့ပါ။";
+
+        container.appendChild(noImage);
+
+    }
+
+
+    data.images.forEach(function(item) {
+
+        /*
+         * Flask returns:
+         *
+         * {
+         *   name: "...",
+         *   image: "timetable/firstA.jpg"
+         * }
+         */
+
+
+        const majorTitle =
+            document.createElement("div");
+
+        majorTitle.className =
+            "timetable-major";
+
+        majorTitle.innerText =
+            item.name;
+
+
+        container.appendChild(
+            majorTitle
+        );
+
+
+        const img =
+            document.createElement("img");
+
+
+        img.className =
+            "timetable-image";
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Flask static folder:
+         *
+         * static/timetable/firstA.jpg
+         *
+         * URL:
+         *
+         * /static/timetable/firstA.jpg
+         */
+
+        const imageUrl =
+            "/static/" + item.image;
+
+
+        img.src =
+            imageUrl;
+
+
+        img.alt =
+            item.name;
+
+
+        img.loading =
+            "lazy";
+
+
+        img.onclick =
+            function() {
+
+                window.open(
+                    imageUrl,
+                    "_blank"
+                );
+
+            };
+
+
+        img.onerror =
+            function() {
+
+                console.error(
+                    "IMAGE NOT FOUND:",
+                    imageUrl
+                );
+
+
+                const error =
+                    document.createElement("div");
+
+                error.className =
+                    "image-error";
+
+                error.innerText =
+                    "❌ Image မတွေ့ပါ: " +
+                    imageUrl;
+
+                container.appendChild(
+                    error
+                );
+
+            };
+
+
+        container.appendChild(img);
+
+    });
+
+
+    chatBox.appendChild(container);
+
+    scrollToBottom();
+
+}
+
+
+
+/* =========================================================
+   PROCESS RESPONSE
+========================================================= */
+
+function processResponse(data) {
+
+    removeTyping();
+
+
+    console.log(
+        "Flask response:",
+        data
+    );
+
+
+    /* TEXT */
+
+    if (data.type === "text") {
+
+        addBotMessage(
+            getResponseText(data)
+        );
+
+        return;
+
+    }
+
+
+    /* DEGREE SELECT */
+
+    if (data.type === "degree_select") {
+
+        addBotMessage(
+            getResponseText(data)
+        );
+
+        showDegreeSelection();
+
+        return;
+
+    }
+
+
+    /* DEGREE */
+
+    if (data.type === "degree") {
+
+        addBotMessage(
+            data.text ||
+            data.message ||
+            "Degree information မတွေ့ပါ။"
+        );
+
+        return;
+
+    }
+
+
+    /* COURSE SELECT */
+
+    if (data.type === "course_select") {
+
+        addBotMessage(
+            getResponseText(data)
+        );
+
+        showCourseSelection();
+
+        return;
+
+    }
+
+
+    /* COURSE YEAR SELECT */
+
+    if (data.type === "course_year_select") {
+
+        addBotMessage(
+            getResponseText(data)
+        );
+
+        showCourseYearSelection(
+            data.course
+        );
+
+        return;
+
+    }
+
+
+    /* COURSE */
+
+    if (data.type === "course") {
+
+        showCourseList(
+            data.course,
+            data.year,
+            data.subjects || []
+        );
+
+        return;
+
+    }
+
+
+    /* TIMETABLE SELECT */
+
+    if (data.type === "timetable_select") {
+
+        addBotMessage(
+            getResponseText(data)
+        );
+
+        showTimetableSelection();
+
+        return;
+
+    }
+
+
+    /* TIMETABLE */
+
+    if (data.type === "timetable") {
+
+        showTimetable(data);
+
+        return;
+
+    }
+
+
+    /* UNKNOWN */
+
+    addBotMessage(
+        getResponseText(data) ||
+        "တောင်းပန်ပါတယ်။ ပြန်လည်မေးမြန်းပေးပါ။"
+    );
+
+}
+
+
+
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
+
+async function sendMessage() {
+
+    const message =
+        input.value.trim();
+
+
+    if (!message) {
+        return;
+    }
+
+
+    addUserMessage(message);
+
+
+    input.value = "";
+
+
+    sendButton.disabled =
+        true;
+
+
+    showTyping();
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/chat",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            message: message
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Server status:",
+            response.status
+        );
+
+
+        console.log(
+            "Server data:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                getResponseText(data) ||
+                "Server error"
+            );
+
+        }
+
+
+        setTimeout(function() {
+
+            processResponse(data);
+
+            sendButton.disabled =
+                false;
+
+            input.focus();
+
+        }, 300);
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "CHAT ERROR:",
+            error
+        );
+
+
+        removeTyping();
+
+
+        addBotMessage(
+            "❌ Server နှင့် ချိတ်ဆက်၍မရပါ။ Flask application ကို စစ်ဆေးပါ။"
+        );
+
+
+        sendButton.disabled =
+            false;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   QUICK MESSAGE
+========================================================= */
+
+function quickMessage(message) {
+
+    input.value =
+        message;
+
+    sendMessage();
+
+}
+
+
+
+/* =========================================================
+   ENTER
+========================================================= */
+
+input.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+
+/* =========================================================
+   LOAD
+========================================================= */
+
+window.addEventListener(
+    "load",
+    function() {
+
+        input.focus();
+
+        scrollToBottom();
+
+    }
+);
+
+
+</script>
+
+
+</body>
+</html>
